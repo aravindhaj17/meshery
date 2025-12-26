@@ -39,8 +39,11 @@ mesheryctl environment list --orgID [orgID]
 
 	Args: func(cmd *cobra.Command, args []string) error {
 		// Check if all flag is set
-		orgIDFlag, _ := cmd.Flags().GetString("orgID")
-
+		orgIDFlag, err := cmd.Flags().GetString("orgID")
+        if err != nil {
+			return utils.ErrInvalidArgument(err)
+		}
+		
 		if orgIDFlag == "" {
 			const errMsg = "[ orgID ] isn't specified\n\nUsage: mesheryctl environment list --orgID [orgID]\nRun 'mesheryctl environment list --help' to see detailed help message"
 			return utils.ErrInvalidArgument(errors.New(errMsg))
@@ -48,7 +51,10 @@ mesheryctl environment list --orgID [orgID]
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		orgID, _ := cmd.Flags().GetString("orgID")
+		orgID, err := cmd.Flags().GetString("orgID")
+		if err != nil {
+			return utils.ErrInvalidArgument(err)
+		}
 
 		// Validate UUID before making API call
 		if _, err := uuid.Parse(orgID); err != nil {
@@ -77,7 +83,7 @@ mesheryctl environment list --orgID [orgID]
 		}
 		err = display.List(dataToDisplay)
 		if err != nil {
-			return err
+			return utils.ErrInvalidArgument(err)
 		}
 
 		return nil
